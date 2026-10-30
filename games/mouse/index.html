@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>쥐 잡기 - 냥냥놀이터</title>
+  <meta name="description" content="구멍에서 튀어나오는 쥐를 냥이 앞발로 잡아 주세요. 강아지는 건드리면 안 돼요!">
+  <meta name="theme-color" content="#fff4e6">
+  <link rel="icon" href="../../assets/cat.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <link rel="stylesheet" href="mouse.css">
+</head>
+<body>
+  <nav class="topbar">
+    <a class="back" href="../../">‹ 홈</a>
+    <span class="title">쥐 잡기</span>
+    <span class="best" id="best"></span>
+  </nav>
+
+  <div class="hud">
+    <span class="hp">❤️ <span class="hp-bar"><i id="hp"></i></span> <b id="hp-text">100</b></span>
+    <span>점수 <b id="score">0</b></span>
+  </div>
+
+  <section class="field" id="field">
+    <div class="holes" id="holes"></div>
+    <div class="overlay" id="start">
+      <img src="../../assets/cat.svg" alt="" width="96" height="96">
+      <p>
+        구멍에서 나온 쥐를 톡 눌러 잡아 주세요!<br>
+        쥐를 놓치거나 강아지를 누르면<br>체력이 줄어요.
+      </p>
+      <ul class="legend">
+        <li>🐭 1점</li>
+        <li>🐁 3점 (금방 숨어요)</li>
+        <li>🐭 놓치면 체력 −5</li>
+        <li>🐶 누르면 체력 −20</li>
+      </ul>
+      <button type="button" id="start-btn">시작!</button>
+    </div>
+  </section>
+
+  <dialog id="result">
+    <form method="dialog">
+      <img src="../../assets/cat.svg" alt="" width="80" height="80">
+      <p class="result-title" id="result-title"></p>
+      <p class="result-score"><b id="result-score">0</b>점</p>
+      <p class="result-time" id="result-time"></p>
+      <p class="result-best" id="result-best"></p>
+      <button type="submit" value="again">한 판 더!</button>
+    </form>
+  </dialog>
+
+  <script src="mouse.js"></script>
+</body>
+</html>
