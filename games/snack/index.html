@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>간식 받기 - 냥냥놀이터</title>
+  <meta name="description" content="30초 동안 떨어지는 간식을 냥이가 받아 먹게 해 주세요. 오이는 피하세요!">
+  <meta name="theme-color" content="#fff4e6">
+  <link rel="icon" href="../../assets/cat.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <link rel="stylesheet" href="snack.css">
+</head>
+<body>
+  <nav class="topbar">
+    <a class="back" href="../../">‹ 홈</a>
+    <span class="title">간식 받기</span>
+    <span class="best" id="best"></span>
+  </nav>
+
+  <div class="hud">
+    <span>⏱ <b id="time">30</b>초</span>
+    <span>점수 <b id="score">0</b></span>
+  </div>
+
+  <section class="field" id="field">
+    <canvas id="canvas"></canvas>
+    <div class="overlay" id="start">
+      <img src="../../assets/cat.svg" alt="" width="96" height="96">
+      <p>
+        손가락으로 냥이를 좌우로 움직여<br>떨어지는 간식을 받아 주세요!
+      </p>
+      <ul class="legend">
+        <li>🐟 1점</li>
+        <li>🍗 3점</li>
+        <li>⭐ 10점</li>
+        <li>🥒 −5점</li>
+      </ul>
+      <button type="button" id="start-btn">시작!</button>
+    </div>
+  </section>
+
+  <dialog id="result">
+    <form method="dialog">
+      <img src="../../assets/cat.svg" alt="" width="80" height="80">
+      <p class="result-title" id="result-title"></p>
+      <p class="result-score"><b id="result-score">0</b>점</p>
+      <p class="result-best" id="result-best"></p>
+      <button type="submit" value="again">한 판 더!</button>
+    </form>
+  </dialog>
+
+  <script src="snack.js"></script>
+</body>
+</html>
