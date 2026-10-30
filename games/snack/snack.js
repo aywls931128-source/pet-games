@@ -1,7 +1,7 @@
 (function () {
-  const STORAGE_KEY = 'nyang-snack-v2';
+  const STORAGE_KEY = 'nyang-snack-v3';
   const MAX_HP = 100;
-  const RAMP_SECONDS = 90; // 이 시간에 걸쳐 점점 어려워진다
+  const RAMP_SECONDS = 60; // 이 시간에 걸쳐 점점 어려워진다
   const CAT_SIZE = 96;
 
   // 떨어지는 것들. weight는 처음 → 가장 어려울 때 나오는 비율.
@@ -9,8 +9,9 @@
     { emoji: '🐟', points: 1, weight: [60, 50] },
     { emoji: '🍗', points: 3, weight: [20, 16] },
     { emoji: '⭐', points: 10, weight: [4, 4], fast: true },
-    { emoji: '🥒', damage: 10, weight: [12, 22] },
-    { emoji: '🍖', damage: 20, weight: [4, 14], rotten: true },
+    { emoji: '🥒', damage: 10, weight: [14, 24] },
+    { emoji: '🍫', damage: 10, weight: [10, 18] },
+    { emoji: '🍖', damage: 20, weight: [5, 14], rotten: true },
   ];
 
   const $ = (id) => document.getElementById(id);
@@ -107,9 +108,9 @@
   function spawn(now) {
     const p = progress(now);
     const item = pickItem(p);
-    const speed = (160 + 240 * p) * (item.fast ? 1.5 : 1) * (0.9 + Math.random() * 0.2);
+    const speed = (190 + 270 * p) * (item.fast ? 1.5 : 1) * (0.9 + Math.random() * 0.2);
     game.falling.push({ item, x: 24 + Math.random() * (width - 48), y: -30, speed });
-    game.nextSpawn = now + (650 - 380 * p) * (0.7 + Math.random() * 0.6);
+    game.nextSpawn = now + (560 - 330 * p) * (0.7 + Math.random() * 0.6);
   }
 
   function catTop() {
