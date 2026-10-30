@@ -25,10 +25,39 @@
   display: flex;
   justify-content: space-between;
   font-size: 17px;
+  align-items: center;
   padding: 0 4px 8px;
 }
 
 .hud b { font-size: 22px; }
+
+.hp {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hp b { min-width: 36px; }
+
+.hp-bar {
+  width: 120px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.hp-bar i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: #e5737a;
+  transition: width 0.2s;
+}
+
+.hp-bar i.low { background: #d64545; animation: blink 0.6s steps(2) infinite; }
+
+@keyframes blink { 50% { opacity: 0.4; } }
 
 .field {
   position: relative;
@@ -74,6 +103,8 @@
   font-size: 17px;
 }
 
+.legend li { display: flex; align-items: center; gap: 4px; }
+
 .overlay button,
 dialog button {
   background: var(--accent);
@@ -106,5 +137,7 @@ dialog button { width: 100%; }
 .result-score { margin: 4px 0; }
 
 .result-score b { font-size: 44px; color: var(--accent); }
+
+.result-time { margin: 0; font-weight: 700; }
 
 .result-best { margin: 0 0 16px; color: var(--muted); }

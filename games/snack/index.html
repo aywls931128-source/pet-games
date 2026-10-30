@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>간식 받기 - 냥냥놀이터</title>
-  <meta name="description" content="30초 동안 떨어지는 간식을 냥이가 받아 먹게 해 주세요. 오이는 피하세요!">
+  <meta name="description" content="떨어지는 간식을 냥이가 받아 먹게 해 주세요. 오이와 썩은 고기를 피하면 오래 버틸 수 있어요!">
   <meta name="theme-color" content="#fff4e6">
   <link rel="icon" href="../../assets/cat.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../../assets/style.css">
@@ -18,7 +18,7 @@
   </nav>
 
   <div class="hud">
-    <span>⏱ <b id="time">30</b>초</span>
+    <span class="hp">❤️ <span class="hp-bar"><i id="hp"></i></span> <b id="hp-text">100</b></span>
     <span>점수 <b id="score">0</b></span>
   </div>
 
@@ -27,13 +27,15 @@
     <div class="overlay" id="start">
       <img src="../../assets/cat.svg" alt="" width="96" height="96">
       <p>
-        손가락으로 냥이를 좌우로 움직여<br>떨어지는 간식을 받아 주세요!
+        손가락으로 냥이를 좌우로 움직여<br>떨어지는 간식을 받아 주세요!<br>
+        나쁜 걸 먹으면 체력이 줄고, 0이 되면 끝!
       </p>
       <ul class="legend">
         <li>🐟 1점</li>
         <li>🍗 3점</li>
         <li>⭐ 10점</li>
-        <li>🥒 −5점</li>
+        <li>🥒 체력 −10</li>
+        <li><img id="legend-rotten" alt="썩은 고기" width="24" height="24"> 체력 −20</li>
       </ul>
       <button type="button" id="start-btn">시작!</button>
     </div>
@@ -44,6 +46,7 @@
       <img src="../../assets/cat.svg" alt="" width="80" height="80">
       <p class="result-title" id="result-title"></p>
       <p class="result-score"><b id="result-score">0</b>점</p>
+      <p class="result-time" id="result-time"></p>
       <p class="result-best" id="result-best"></p>
       <button type="submit" value="again">한 판 더!</button>
     </form>

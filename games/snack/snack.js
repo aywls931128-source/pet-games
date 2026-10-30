@@ -1,16 +1,17 @@
 (function () {
-  const STORAGE_KEY = 'nyang-snack-v1';
-  const GAME_SECONDS = 30;
+  const STORAGE_KEY = 'nyang-snack-v2';
+  const MAX_HP = 100;
+  const RAMP_SECONDS = 90; // 이 시간에 걸쳐 점점 어려워진다
   const CAT_SIZE = 96;
 
-  // 떨어지는 것들. weight가 클수록 자주 나온다.
+  // 떨어지는 것들. weight는 처음 → 가장 어려울 때 나오는 비율.
   const ITEMS = [
-    { emoji: '🐟', points: 1, weight: 60 },
-    { emoji: '🍗', points: 3, weight: 20 },
-    { emoji: '⭐', points: 10, weight: 4, fast: true },
-    { emoji: '🥒', points: -5, weight: 16 },
+    { emoji: '🐟', points: 1, weight: [60, 50] },
+    { emoji: '🍗', points: 3, weight: [20, 16] },
+    { emoji: '⭐', points: 10, weight: [4, 4], fast: true },
+    { emoji: '🥒', damage: 10, weight: [12, 22] },
+    { emoji: '🍖', damage: 20, weight: [4, 14], rotten: true },
   ];
-  const TOTAL_WEIGHT = ITEMS.reduce((sum, item) => sum + item.weight, 0);
 
   const $ = (id) => document.getElementById(id);
   const field = $('field');
@@ -20,10 +21,32 @@
   const catImg = new Image();
   catImg.src = '../../assets/cat.svg';
 
+  const rottenImg = makeRottenMeat();
+
   let width = 0;
   let height = 0;
   let best = loadBest();
   let game = null;
+
+  // 이모지에 썩은 고기가 없어서, 고기를 초록빛으로 물들이고 파리를 붙여 만든다.
+  function makeRottenMeat() {
+    const size = 80;
+    const c = document.createElement('canvas');
+    c.width = size;
+    c.height = size;
+    const g = c.getContext('2d');
+    g.font = '56px sans-serif';
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.fillText('🍖', size / 2, size / 2 + 6);
+    g.globalCompositeOperation = 'source-atop';
+    g.fillStyle = 'rgba(96, 140, 48, 0.6)';
+    g.fillRect(0, 0, size, size);
+    g.globalCompositeOperation = 'source-over';
+    g.font = '22px sans-serif';
+    g.fillText('🪰', size - 16, 14);
+    return c;
+  }
 
   function loadBest() {
     try { return Number(localStorage.getItem(STORAGE_KEY)) || 0; } catch (e) { return 0; }
@@ -44,15 +67,19 @@
     canvas.width = width * ratio;
     canvas.height = height * ratio;
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-    if (game) game.catX = Math.min(Math.max(game.catX, CAT_SIZE / 2), width - CAT_SIZE / 2);
+    if (game) game.catX = clampX(game.catX);
     draw();
   }
 
-  function pickItem() {
-    let r = Math.random() * TOTAL_WEIGHT;
-    for (const item of ITEMS) {
-      r -= item.weight;
-      if (r < 0) return item;
+  const clampX = (x) => Math.min(Math.max(x, CAT_SIZE / 2), width - CAT_SIZE / 2);
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  function pickItem(p) {
+    const weights = ITEMS.map((item) => lerp(item.weight[0], item.weight[1], p));
+    let r = Math.random() * weights.reduce((sum, w) => sum + w, 0);
+    for (let i = 0; i < ITEMS.length; i++) {
+      r -= weights[i];
+      if (r < 0) return ITEMS[i];
     }
     return ITEMS[0];
   }
@@ -60,6 +87,7 @@
   function newGame() {
     return {
       score: 0,
+      hp: MAX_HP,
       startedAt: performance.now(),
       lastFrame: performance.now(),
       nextSpawn: 0,
@@ -71,33 +99,33 @@
     };
   }
 
-  // 시간이 갈수록 간식이 빨리, 자주 떨어진다 (0~1).
+  // 0(처음) ~ 1(가장 어려움). 오래 버틸수록 빨리, 자주, 나쁜 것이 많이 떨어진다.
   function progress(now) {
-    return Math.min(1, (now - game.startedAt) / (GAME_SECONDS * 1000));
+    return Math.min(1, (now - game.startedAt) / (RAMP_SECONDS * 1000));
   }
 
   function spawn(now) {
-    const item = pickItem();
     const p = progress(now);
-    const speed = (160 + 220 * p) * (item.fast ? 1.5 : 1) * (0.9 + Math.random() * 0.2);
+    const item = pickItem(p);
+    const speed = (160 + 240 * p) * (item.fast ? 1.5 : 1) * (0.9 + Math.random() * 0.2);
     game.falling.push({ item, x: 24 + Math.random() * (width - 48), y: -30, speed });
-    game.nextSpawn = now + (650 - 350 * p) * (0.7 + Math.random() * 0.6);
+    game.nextSpawn = now + (650 - 380 * p) * (0.7 + Math.random() * 0.6);
   }
 
   function catTop() {
     return height - CAT_SIZE - 6;
   }
 
-  function catch_(f, now) {
-    game.score = Math.max(0, game.score + f.item.points);
-    const good = f.item.points > 0;
-    game.popups.push({
-      text: (good ? '+' : '') + f.item.points,
-      x: f.x, y: catTop(), until: now + 700, good,
-    });
-    if (!good) {
+  function eat(f, now) {
+    const item = f.item;
+    if (item.damage) {
+      game.hp = Math.max(0, game.hp - item.damage);
       game.startledUntil = now + 600;
-      if (navigator.vibrate) navigator.vibrate(120);
+      if (navigator.vibrate) navigator.vibrate(item.damage * 10);
+      game.popups.push({ text: '❤️−' + item.damage, x: f.x, y: catTop(), until: now + 700, good: false });
+    } else {
+      game.score += item.points;
+      game.popups.push({ text: '+' + item.points, x: f.x, y: catTop(), until: now + 700, good: true });
     }
   }
 
@@ -111,19 +139,20 @@
     game.falling = game.falling.filter((f) => {
       const prevY = f.y;
       f.y += f.speed * dt;
-      // 냥이 머리 높이를 지나가는 순간 냥이 몸 폭 안에 있으면 받은 것.
+      // 냥이 머리 높이를 지나가는 순간 냥이 몸 폭 안에 있으면 먹은 것.
       if (prevY < top + 20 && f.y >= top + 20 && Math.abs(f.x - game.catX) < CAT_SIZE * 0.5) {
-        catch_(f, now);
+        eat(f, now);
         return false;
       }
       return f.y < height + 30;
     });
     game.popups = game.popups.filter((p) => p.until > now);
 
-    const left = Math.max(0, GAME_SECONDS - (now - game.startedAt) / 1000);
-    $('time').textContent = Math.ceil(left);
+    $('hp').style.width = game.hp + '%';
+    $('hp').classList.toggle('low', game.hp <= 30);
+    $('hp-text').textContent = game.hp;
     $('score').textContent = game.score;
-    if (left <= 0) finish();
+    if (game.hp <= 0) finish(now);
   }
 
   function draw() {
@@ -136,7 +165,10 @@
     ctx.font = '34px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    for (const f of game.falling) ctx.fillText(f.item.emoji, f.x, f.y);
+    for (const f of game.falling) {
+      if (f.item.rotten) ctx.drawImage(rottenImg, f.x - 24, f.y - 24, 48, 48);
+      else ctx.fillText(f.item.emoji, f.x, f.y);
+    }
 
     drawCat(game.catX, now < game.startledUntil);
 
@@ -144,7 +176,7 @@
     for (const p of game.popups) {
       const t = 1 - (p.until - now) / 700;
       ctx.globalAlpha = 1 - t;
-      ctx.fillStyle = p.good ? '#e07b1f' : '#4a8f3c';
+      ctx.fillStyle = p.good ? '#e07b1f' : '#d64545';
       ctx.fillText(p.text, p.x, p.y - 40 * t);
     }
     ctx.globalAlpha = 1;
@@ -174,9 +206,10 @@
     requestAnimationFrame(loop);
   }
 
-  function finish() {
+  function finish(now) {
     game.over = true;
     const score = game.score;
+    const seconds = Math.floor((now - game.startedAt) / 1000);
     const isRecord = score > best;
     if (isRecord) {
       best = score;
@@ -185,9 +218,10 @@
     }
     $('result-score').textContent = score;
     $('result-title').textContent = isRecord && score > 0 ? '🎉 새 기록이다옹!'
-      : score >= 60 ? '배불러서 행복하다옹!'
-      : score >= 25 ? '맛있게 먹었다옹!'
-      : '조금 더 먹고 싶다옹…';
+      : score >= 100 ? '배불러서 행복하다옹!'
+      : score >= 40 ? '맛있게 먹었다옹!'
+      : '배탈 났다옹…';
+    $('result-time').textContent = seconds + '초 버텼어요';
     $('result-best').textContent = '최고 기록 ' + best + '점';
     $('result').returnValue = '';
     $('result').showModal();
@@ -197,8 +231,7 @@
     if (!game || game.over) return;
     if (performance.now() < game.startledUntil) return;
     const rect = canvas.getBoundingClientRect();
-    const x = clientX - rect.left;
-    game.catX = Math.min(Math.max(x, CAT_SIZE / 2), width - CAT_SIZE / 2);
+    game.catX = clampX(clientX - rect.left);
   }
 
   field.addEventListener('pointerdown', (e) => moveTo(e.clientX));
@@ -215,7 +248,7 @@
   setInterval(() => {
     if (!game || game.over || performance.now() < game.startledUntil) return;
     const step = (keys.has('ArrowRight') ? 12 : 0) - (keys.has('ArrowLeft') ? 12 : 0);
-    if (step) game.catX = Math.min(Math.max(game.catX + step, CAT_SIZE / 2), width - CAT_SIZE / 2);
+    if (step) game.catX = clampX(game.catX + step);
   }, 16);
 
   $('start-btn').addEventListener('click', start);
@@ -224,6 +257,7 @@
     else $('start').hidden = false;
   });
 
+  $('legend-rotten').src = rottenImg.toDataURL();
   catImg.onload = draw;
   window.addEventListener('resize', resize);
   showBest();
