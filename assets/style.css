@@ -107,3 +107,8 @@ footer {
 @media (prefers-reduced-motion: reduce) {
   .hero-cat { animation: none; }
 }
+
+.badge.play {
+  background: var(--accent);
+  color: #fff;
+}
