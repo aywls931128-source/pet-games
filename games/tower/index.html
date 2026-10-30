@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>캣타워 오르기 - 냥냥놀이터</title>
+  <meta name="description" content="왼쪽, 오른쪽을 눌러 냥이가 캣타워를 오르게 해 주세요. 장애물을 피해 시간이 다 되기 전에 높이!">
+  <meta name="theme-color" content="#fff4e6">
+  <link rel="icon" href="../../assets/cat.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <link rel="stylesheet" href="tower.css">
+</head>
+<body>
+  <nav class="topbar">
+    <a class="back" href="../../">‹ 홈</a>
+    <span class="title">캣타워 오르기</span>
+    <span class="best" id="best"></span>
+  </nav>
+
+  <div class="hud">
+    <span class="timer">⏱ <span class="time-bar"><i id="time"></i></span></span>
+    <span>점수 <b id="score">0</b></span>
+  </div>
+
+  <section class="field" id="field">
+    <canvas id="canvas"></canvas>
+    <div class="side-hint" aria-hidden="true"><span>◀ 왼쪽</span><span>오른쪽 ▶</span></div>
+    <div class="overlay" id="start">
+      <img src="../../assets/cat.svg" alt="" width="96" height="96">
+      <p>
+        화면 왼쪽이나 오른쪽을 눌러<br>냥이를 한 칸씩 올려 주세요!<br>
+        시간 막대가 다 줄면 끝이에요.
+      </p>
+      <ul class="legend">
+        <li>한 칸 오르면 시간 +조금</li>
+        <li>🐟 먹으면 3점, 시간 +많이</li>
+        <li>🐶 🧹 🪤 있는 쪽은 피하기 (시간 −)</li>
+      </ul>
+      <button type="button" id="start-btn">시작!</button>
+    </div>
+  </section>
+
+  <dialog id="result">
+    <form method="dialog">
+      <img src="../../assets/cat.svg" alt="" width="80" height="80">
+      <p class="result-title" id="result-title"></p>
+      <p class="result-score"><b id="result-score">0</b>점</p>
+      <p class="result-time" id="result-time"></p>
+      <p class="result-best" id="result-best"></p>
+      <button type="submit" value="again">한 판 더!</button>
+    </form>
+  </dialog>
+
+  <script src="tower.js"></script>
+</body>
+</html>
