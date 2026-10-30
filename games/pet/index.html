@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>냥이 키우기 - 냥냥놀이터</title>
+  <meta name="description" content="밥 주고, 씻기고, 놀아 주고, 재워 주며 냥이를 어른 고양이로 키워 보세요.">
+  <meta name="theme-color" content="#fff4e6">
+  <link rel="icon" href="../../assets/cat.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <link rel="stylesheet" href="pet.css">
+</head>
+<body>
+  <nav class="topbar">
+    <a class="back" href="../../">‹ 홈</a>
+    <span class="title" id="pet-name">냥이</span>
+    <span class="stage" id="stage"></span>
+  </nav>
+
+  <section class="room" id="room">
+    <p class="bubble" id="bubble"></p>
+    <img class="pet" id="pet" src="../../assets/cat.svg" alt="키우는 고양이">
+    <span class="effect" id="effect" aria-hidden="true"></span>
+  </section>
+
+  <div class="growth">
+    <span>애정</span>
+    <div class="bar"><i id="exp-bar"></i></div>
+    <small id="exp-text"></small>
+  </div>
+
+  <ul class="stats">
+    <li><span>🍖 배부름</span><div class="bar"><i id="bar-food"></i></div></li>
+    <li><span>🫧 깨끗함</span><div class="bar"><i id="bar-clean"></i></div></li>
+    <li><span>💛 기분</span><div class="bar"><i id="bar-fun"></i></div></li>
+    <li><span>⚡ 기운</span><div class="bar"><i id="bar-energy"></i></div></li>
+  </ul>
+
+  <div class="actions">
+    <button type="button" data-action="food">🍖<span>밥 주기</span></button>
+    <button type="button" data-action="clean">🫧<span>씻기기</span></button>
+    <button type="button" data-action="fun">🧶<span>놀아 주기</span></button>
+    <button type="button" data-action="sleep" id="sleep-btn">💤<span>재우기</span></button>
+  </div>
+
+  <dialog id="name-dialog">
+    <form method="dialog">
+      <img src="../../assets/cat.svg" alt="" width="80" height="80">
+      <p>새 고양이가 왔어요!<br>이름을 지어 주세요.</p>
+      <input id="name-input" maxlength="8" placeholder="냥이" autocomplete="off">
+      <button type="submit">이 이름으로 할게요</button>
+    </form>
+  </dialog>
+
+  <script src="pet.js"></script>
+</body>
+</html>
